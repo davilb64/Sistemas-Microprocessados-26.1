@@ -1,1 +1,27 @@
 .theia/
+
+# CCS project metadata
+.ccsproject
+.cproject
+.project
+.clangd
+
+# Eclipse/CCS settings
+.settings/
+
+# Build output (CCS Debug folder)
+Debug/
+
+# Linker command files (gerado pelo CCS)
+lnk_msp430f5529.cmd
+
+# Target configuration files (gerado pelo CCS)
+targetConfigs/
+
+# Compiled object files and binaries
+*.obj
+*.out
+*.map
+*.d
+*.opt
+*_linkInfo.xml
