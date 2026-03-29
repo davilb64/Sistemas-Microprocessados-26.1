@@ -1,1 +1,18 @@
+# Arquivos de compilação e binários
+Debug/
+Release/
+*.out
+*.map
+*.obj
+*.d
+*.hex
+*.bin
+
+# Arquivos temporários e de log do CCS/Eclipse
+.metadata/
 .theia/
+*.log
+
+# Arquivos do sistema operacional (Windows/Mac)
+Thumbs.db
+.DS_Store
