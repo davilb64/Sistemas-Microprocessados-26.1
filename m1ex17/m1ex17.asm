@@ -11,7 +11,7 @@ init:
   ;entradas
   mov.w #vetor, R12 
   mov.w #0x05, R13
-  mov.w @R12, R4 ;menor valor atual
+  mov.w @R12, R4 ;maior valor atual
   mov.w #1, R5 ;contador igual
   
   ;programa
