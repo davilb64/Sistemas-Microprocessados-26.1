@@ -15,6 +15,7 @@ init:
   mov.b #1, R5 ;contador igual
   
   ;programa
+  dec.b(R13)
   call #menor
   mov.b R4, R12
   mov.b R5, R13
