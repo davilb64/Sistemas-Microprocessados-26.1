@@ -9,21 +9,20 @@ main:
 
 init:
   ;entradas
-  mov.w #0xFFF0, R4
-  mov.w #2, R5
+  mov.b #0x08, R12
+  mov.b #0x09, R13
   ;programa
-  add.w R4,R5
-  jn subtraiUm
-  jz end
-
-somaUm:
-  inc(R5)
-  jmp end
-
-subtraiUm:
-  dec(R5)
-  jmp end
+  mov.b R13, R4
+  dec.b(R12)
+  call #mult8
 
 end:
   jmp $
   nop
+
+mult8:
+  add.w R4, R13
+  dec(R12)
+  jnz mult8
+  nop
+  ret
