@@ -15,7 +15,7 @@ init:
   mov.w #0x0001, R4 ; representa menor valor atual
   mov.w #0x0001, R5 ; representa maior valor atual
   mov.w #0x2400, R6 ; contador pos atual memoria
-  mov.w #0x000E, R7 ; repetiçoes
+  mov.w #0x0014, R7 ; repetiçoes
   mov.w #0, R8; temp
 
   mov.w R4, 0(R6) ;seta inicial no endereco
