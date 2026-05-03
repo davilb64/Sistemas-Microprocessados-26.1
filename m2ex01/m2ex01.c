@@ -1,29 +1,24 @@
 #include <msp430.h>
 
-void espera(unsigned long tempo); 
-
 int main(void)
 {
-  WDTCTL = WDTPW+WDTHOLD;                   
-  P1DIR |= BIT0; //p1.0 para saida
-  P2DIR &= ~BIT1;   //p2.1 para entrada
-  P2REN |= BIT1;    //ativa resistor 2.1
-  P2OUT |= BIT1;    //pullup
+  WDTCTL = WDTPW+WDTHOLD;    
+  //CONFIG BOTÃO
+    P2DIR &= ~BIT1; //BOTÃO PARA ENTRADA
+    P2REN |= BIT1; //RESISTOR
+    P2OUT |= BIT1; //PULL UP
+
+  //CONFIG LED
+    P4DIR |= BIT7;
 
   while(1)                               
   {
-    if ((P2IN & BIT1) == 0) { 
-      P1OUT |= BIT0;                  
-      espera(200);         
-    } else {
-      P1OUT &= ~BIT0;        
+    if ((P2IN & BIT1) == 0) {
+      P4OUT |= BIT7;
+    }
+    else {
+      P4OUT &= ~BIT7;
     }
   }
   return 0;   
-}
-
-void espera(unsigned long tempo){
-    volatile unsigned long i = 0; 
-    for(i=0; i < tempo; i++);
-    return;
 }
