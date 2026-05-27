@@ -10,11 +10,11 @@ int main(void)
   P1DIR |= BIT0;
   P4DIR |= BIT7;
 
-  // ccr0 (valor qualquer visto q estamos só buscando uma porcentagem de luminosidade, não marcando tempo especificamente)
+  // ccr0 (valor qualquer, visto q estamos só buscando uma porcentagem de luminosidade, não marcando tempo especificamente)
   TA0CCR0 = 1000;
 
   // deuty cycle
-  TA0CCR1 = 300; // 30% led vermeklho
+  TA0CCR1 = 100; // 30% led vermelho
   TA0CCR2 = 700; // 70% led verde
 
   // liga interrupções
@@ -44,7 +44,6 @@ __interrupt void iniciaCiclo(){
 #pragma vector = TIMER0_A1_VECTOR
 __interrupt void controlaDutyCycle(){
   switch(TA0IV) {
-      
       case TA0IV_TACCR1:
           P1OUT &= ~BIT0; //apaga vermelho
           break;
