@@ -2,18 +2,19 @@
 #include <stdint.h> 
 
 // variaveis pro infravermelho
-unsigned int tempoAnterior = 0;
-unsigned int contadorBits = 0;
-uint32_t codigoRecebido = 0;    
+volatile unsigned int tempoAnterior = 0;
+volatile unsigned int contadorBits = 0;
+volatile uint32_t codigoRecebido = 0;  
 volatile uint8_t codigoPronto = 0; 
 volatile unsigned int ultimoDelta = 0;
+volatile uint8_t recebendo = 0; 
 
 // brilho dos leds
 unsigned int brilhoRed = 20000;
 unsigned int brilhoGreen = 20000;
 unsigned int brilhoBlue = 20000;
 
-#define PASSO 2000 // quanto brilho aumenta/diminui cada vez que apertar
+#define PASSO 2000// quanto brilho aumenta/diminui cada vez que apertar
 
 int main(void)
 {
@@ -71,6 +72,7 @@ int main(void)
                     else {
                         brilhoRed = 0; // brilho max se já estourou
                     }
+                    codigoPronto = 0;
                     break;
                     
                 case 0xBB44FF00: // bot 4: diminui vermelho
@@ -80,6 +82,7 @@ int main(void)
                     else {
                         brilhoRed = 20000; // brilho min se já estourou
                     }
+                    codigoPronto = 0;
                     break;
 
                 // verde
@@ -90,6 +93,7 @@ int main(void)
                     else {
                         brilhoGreen = 0;
                     } 
+                    codigoPronto = 0;
                     break;
                     
                 case 0xBF40FF00: // bot 5: diminui verde
@@ -99,6 +103,7 @@ int main(void)
                     else {
                         brilhoGreen = 20000;
                     }
+                    codigoPronto = 0; 
                     break;
 
                 // azul
@@ -109,6 +114,7 @@ int main(void)
                     else {
                         brilhoBlue = 0;
                     }
+                    codigoPronto = 0; 
                     break;
                     
                 case 0xBC43FF00: // bot 6: diminui azul
@@ -118,18 +124,25 @@ int main(void)
                     else {
                         brilhoBlue = 20000;
                     } 
+                    codigoPronto = 0; 
                     break;
 
                 case 0xF20DFF00: //bot #: zera tudo
                     brilhoRed = 20000;
                     brilhoGreen = 20000;
                     brilhoBlue = 20000;
+                    codigoPronto = 0; 
                     break;
 
                 case 0xE916FF00: //bot *: estoura tudo
                     brilhoRed = 0;
                     brilhoGreen = 0;
                     brilhoBlue = 0;
+                    codigoPronto = 0; 
+                    break;
+
+                default:
+                    codigoPronto = 0;
                     break;
             }
 
@@ -143,7 +156,7 @@ int main(void)
     }
 }
 
-// iterrupção do infravermelho
+// interrupção do infravermelho
 #pragma vector = TIMER0_A1_VECTOR
 __interrupt void Timer0_A1_ISR(void)
 {
@@ -169,24 +182,40 @@ __interrupt void Timer0_A1_ISR(void)
                 contadorBits = 0;
                 codigoRecebido = 0;
                 codigoPronto = 0;
+                recebendo = 1; 
             }
-            // verifica BIT 1
-            else if (delta > 1800 && delta < 2800) 
+            // Só analisa os bits SE tiver recebido um start bit antes
+            else if (recebendo == 1) 
             {
-                codigoRecebido |= ((uint32_t)1 << contadorBits); 
-                contadorBits++;
-            }
-            // verifica BIT 0
-            else if (delta > 700 && delta < 1600)
-            {
-                contadorBits++;
-            }
+                // verifica BIT 1
+                if (delta > 1800 && delta < 2800) 
+                {
+                    codigoRecebido |= ((uint32_t)1 << contadorBits); 
+                    contadorBits++;
+                }
+                // verifica BIT 0
+                else if (delta > 700 && delta < 1600)
+                {
+                    contadorBits++;
+                }
 
-            // vonfere se chegou nos 32 bits
-            if (contadorBits >= 32) 
-            {
-                codigoPronto = 1; 
-                contadorBits = 0; 
+                else 
+                {
+                    recebendo = 0; 
+                    contadorBits = 0;
+                }
+
+                // confere se chegou nos 32 bits
+                if (contadorBits >= 32) 
+                {
+                    if (codigoRecebido != 0x00000000 && codigoRecebido != 0xFFFFFFFF) 
+                    {
+                        codigoPronto = 1; 
+                    }
+                    
+                    recebendo = 0;
+                    contadorBits = 0; 
+                }
             }
             break;
         }
