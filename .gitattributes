@@ -1,1 +1,2 @@
 *.html linguist-detectable=false
+*.cmd linguist-detectable=false
